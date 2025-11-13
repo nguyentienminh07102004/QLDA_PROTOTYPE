@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Chatbot Tư Vấn Tuyển Sinh — Giao Diện</title>
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="styles.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js" integrity="sha512-SYfDUYPg5xspsG6OOpXU366G8SZsdHOhqk/icdrYJ2E/WKZxPxze7d2HD3AyXpT7U22PZ5y74xRpqZ6A2bJ+kQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	</head>
+	<body>
+		<div class="wrap">
+			<div class="app">
+				<aside class="panel" aria-label="Bảng điều khiển">
+					<div class="brand">
+						<div class="logo">TV</div>
+						<div>
+							<h1>Chatbot Tư Vấn Tuyển Sinh</h1>
+							<p class="sub">Tư vấn ngành học, học phí, học bổng và thủ tục nhập học.</p>
+						</div>
+					</div>
+
+					<div>
+						<h3 style="margin: 0; color: var(--muted); font-size: 13px">Gợi ý nhanh</h3>
+						<div class="quick" style="margin-top: 8px">
+							<button data-quick="Mình muốn học ngành Công nghệ thông tin, có những trường nào phù hợp?">Ngành CNTT</button>
+							<button data-quick="Chi phí học đại học khối A hết khoảng bao nhiêu?">Chi phí & Học phí</button>
+							<button data-quick="Mình muốn xin học bổng, điều kiện như thế nào?">Học bổng</button>
+							<button data-quick="Quy trình xét tuyển và hồ sơ cần chuẩn bị là gì?">Thủ tục & Hồ sơ</button>
+						</div>
+					</div>
+
+					<div class="history">
+						<h3>Lịch sử trò chuyện</h3>
+						<div class="history-list" id="historyList" aria-live="polite">
+							<!-- history items will be rendered here by JS -->
+						</div>
+					</div>
+				</aside>
+
+				<main class="chat-wrap" role="main">
+					<div class="chat-header">
+						<div class="bot-avatar">TS</div>
+						<div class="bot-info">
+							<div class="name">Tư Vấn Tuyển Sinh</div>
+							<div class="role">Trợ lý ảo — trả lời bằng thông tin tham khảo</div>
+						</div>
+						<div style="font-size: 13px; color: var(--muted)">Phiên bản: demo giao diện</div>
+						<div style="display:flex; gap:8px; align-items:center;">
+							<button id="newChatBtn" class="btn small" title="Tạo cuộc trò chuyện mới">Chat mới</button>
+							<button id="configApi" class="btn small" title="Thiết lập API key">API key</button>
+							<button id="toggleFull" class="btn small" title="Toàn màn hình">Toàn màn hình</button>
+						</div>
+					</div>
+
+					<div class="messages" id="messages" aria-live="polite"></div>
+
+					<div class="input-area">
+						<div class="input" role="search">
+							<input
+								id="inputMessage"
+								type="text"
+								placeholder="Gõ câu hỏi của bạn, ví dụ: 'Ngành CNTT học những trường nào?'"
+								aria-label="Nhập tin nhắn"
+							/>
+							<div id="suggest" style="font-size: 13px; color: var(--muted); padding-right: 8px">Nhấn Enter để gửi</div>
+						</div>
+						<button id="sendBtn" class="btn">Gửi</button>
+					</div>
+				</main>
+			</div>
+		</div>
+
+		<script src="app.js"></script>
+	</body>
+</html>
