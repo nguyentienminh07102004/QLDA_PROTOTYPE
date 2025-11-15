@@ -2,6 +2,7 @@
 (function () {
   // Markdown renderer for bot replies (safe by default: HTML disabled)
   const md = (window.markdownit && window.markdownit({ breaks: true, linkify: true })) || null;
+  let msgCounter = 0;
   const messagesEl = document.getElementById("messages");
   const input = document.getElementById("inputMessage");
   const sendBtn = document.getElementById("sendBtn");
@@ -112,7 +113,7 @@
     const h = historyData.find((x) => x.id === id);
     if (!h) return;
     messagesEl.innerHTML = "";
-    h.messages.forEach((m) => renderMessage(m.text, m.who));
+    h.messages.forEach((m, idx) => renderMessage(m.text, m.who, { messageId: `${id}-${idx}` }));
   }
 
   // render history on load
@@ -140,7 +141,7 @@
   if (newChatBtn) {
     newChatBtn.addEventListener("click", () => {
       messagesEl.innerHTML = "";
-      renderMessage("Xin chào! Đây là một cuộc trò chuyện mới. Hãy đặt câu hỏi của bạn.", "bot");
+      renderMessage("Xin chào! Đây là một cuộc trò chuyện mới. Hãy đặt câu hỏi của bạn.", "bot", { messageId: `greet-${Date.now()}-${++msgCounter}` });
       input.focus();
     });
   }
@@ -161,6 +162,8 @@
   function renderMessage(text, who = "bot", opts = {}) {
     const wrap = document.createElement("div");
     wrap.className = "msg " + (who === "user" ? "user" : "bot");
+    const messageId = opts.messageId || `${who}-${Date.now()}-${++msgCounter}`;
+    wrap.dataset.messageId = messageId;
 
     const bubble = document.createElement("div");
     bubble.className = "bubble " + (who === "user" ? "user" : "bot");
@@ -185,9 +188,41 @@
       meta.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       wrap.appendChild(meta);
     }
-
+    // rating (bot only)
+    if (who === "bot") {
+      wrap.appendChild(createRatingUI(messageId, getRating(messageId)));
+    }
     messagesEl.appendChild(wrap);
     scrollToBottom();
+  }
+
+  // ===== Ratings in localStorage =====
+  const RATINGS_KEY = "CHAT_RATINGS_V1";
+  function loadRatings() {
+    try { return JSON.parse(localStorage.getItem(RATINGS_KEY) || "{}"); } catch (_) { return {}; }
+  }
+  function saveRatings(map) { try { localStorage.setItem(RATINGS_KEY, JSON.stringify(map)); } catch (_) {} }
+  function getRating(id) { const all = loadRatings(); return all[id] || 0; }
+  function setRating(id, value) { const all = loadRatings(); all[id] = value; saveRatings(all); }
+
+  function createRatingUI(messageId, currentValue = 0) {
+    const cont = document.createElement("div");
+    cont.className = "rating";
+    for (let i = 1; i <= 5; i++) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "star" + (i <= currentValue ? " active" : "");
+      b.textContent = "★";
+      b.setAttribute("aria-label", `Đánh giá ${i} sao`);
+      b.addEventListener("click", () => {
+        setRating(messageId, i);
+        Array.from(cont.querySelectorAll(".star")).forEach((el, idx) => {
+          if (idx < i) el.classList.add("active"); else el.classList.remove("active");
+        });
+      });
+      cont.appendChild(b);
+    }
+    return cont;
   }
 
   function showTyping() {
@@ -215,7 +250,7 @@
       callGemini(prompt, key)
         .then((reply) => {
           tNode.remove();
-          renderMessage(reply || "(Không có nội dung phản hồi)", "bot");
+          renderMessage(reply || "(Không có nội dung phản hồi)", "bot", { messageId: `ai-${Date.now()}-${++msgCounter}` });
         })
         .catch((err) => {
           console.error("Gemini API error:", err);
@@ -224,14 +259,14 @@
             "(Không thể gọi API: " + (err && err.message ? err.message : "Lỗi không xác định") + ")\nMình sẽ trả lời tạm bằng nội dung tham khảo.",
             "bot"
           );
-          renderMessage(generateBotReply(prompt), "bot", { showTime: false });
+          renderMessage(generateBotReply(prompt), "bot", { showTime: false, messageId: `fb-${Date.now()}-${++msgCounter}` });
         });
     } else {
       // No API key -> fallback
       setTimeout(() => {
         tNode.remove();
         const reply = generateBotReply(prompt);
-        renderMessage(reply, "bot");
+        renderMessage(reply, "bot", { messageId: `rb-${Date.now()}-${++msgCounter}` });
       }, 750 + Math.random() * 900);
     }
   }
@@ -277,7 +312,7 @@
   updateSendState();
 
   // seed conversation
-  renderMessage("Xin chào! Mình là trợ lý tư vấn tuyển sinh. Bạn muốn hỏi về ngành học, học phí, học bổng hay thủ tục?", "bot");
+  renderMessage("Xin chào! Mình là trợ lý tư vấn tuyển sinh. Bạn muốn hỏi về ngành học, học phí, học bổng hay thủ tục?", "bot", { messageId: `seed-${Date.now()}-${++msgCounter}` });
 
   // ========== Gemini API integration ==========
   const API_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
@@ -298,10 +333,14 @@
   }
 
   async function callGemini(userText, apiKey) {
+    const SYSTEM_PROMPT = "Bạn là Chat Bot tuyển sinh của Học viện Công nghệ Bưu Chính Viễn Thông (PTIT). Nếu người dùng hỏi về trường khác, hãy trả lời: 'Tôi không biết do là chat bot của PTIT.'";
     const res = await fetch(`${API_ENDPOINT}?key=${encodeURIComponent(apiKey)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        systemInstruction: {
+          parts: [{ text: SYSTEM_PROMPT }]
+        },
         contents: [
           {
             role: "user",

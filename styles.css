@@ -255,6 +255,31 @@ p.sub {
   margin-top: 6px;
 }
 
+/* rating stars */
+.rating {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 6px;
+}
+.rating .star {
+  background: transparent;
+  border: 0;
+  color: #9aa4b2;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+.rating .star.active {
+  color: #fbbf24; /* amber-400 */
+}
+.rating .star:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.25);
+  border-radius: 4px;
+}
+
 .input-area {
   display: flex;
   gap: 10px;
@@ -357,11 +382,8 @@ body.full-chat .wrap {
   min-height: 100vh;
 }
 body.full-chat .app {
-  grid-template-columns: 1fr;
+  grid-template-columns: 320px 1fr;
   gap: 0;
-}
-body.full-chat .panel {
-  display: none;
 }
 body.full-chat .chat-wrap {
   height: 100vh;
