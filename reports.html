@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Báo cáo thống kê — Admin</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .layout { display:grid; grid-template-columns: 280px 1fr; gap:20px; min-height:100vh; }
+      .sidebar { padding:18px; border-radius:14px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow: 0 8px 30px rgba(2,6,23,0.6); }
+      .menu { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+      .menu a { text-decoration:none; color:inherit; font-size:14px; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0)); transition: transform 120ms ease, background 150ms ease; }
+      .menu a:hover { background: rgba(255,255,255,0.03); transform: translateY(-2px); }
+      .menu a.active { background: var(--glass); }
+      .header { display:flex; align-items:center; gap:12px; padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); }
+      .header .spacer { flex:1; }
+      .admin-avatar { width:36px; height:36px; border-radius:999px; background: linear-gradient(135deg, #60a5fa, #5eead4); display:flex; align-items:center; justify-content:center; color:#042; font-weight:700; }
+
+      /* Cards */
+      .cards { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; }
+      .card { padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.02)); box-shadow: 0 8px 24px rgba(2,6,23,0.4); }
+      .card .label { font-size:13px; color: var(--muted); }
+      .card .value { font-size:24px; font-weight:700; margin-top:6px; }
+      .card .meta { font-size:12px; color: var(--muted); margin-top:6px; }
+
+      /* Fake bar chart */
+      .chart { padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.02)); box-shadow: 0 8px 24px rgba(2,6,23,0.4); }
+      .bars { display:flex; align-items:flex-end; gap:10px; height:200px; padding:10px; }
+      .bar { width:28px; border-radius:8px 8px 0 0; background: linear-gradient(180deg, var(--bubble-bot), #0b1220); border:1px solid rgba(255,255,255,0.04); box-shadow: 0 6px 18px rgba(2,6,23,0.5); }
+      .bar.hot { background: linear-gradient(180deg, var(--bubble-user), #0b1320); }
+      .bar-labels { display:flex; gap:10px; justify-content:space-between; padding:0 10px; color: var(--muted); font-size:12px; }
+
+      /* Table */
+      .table { width:100%; border-collapse:collapse; font-size:14px; border:1px solid rgba(255,255,255,0.04); border-radius:12px; overflow:hidden; }
+      .table thead th { text-align:left; padding:12px; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04)); color:#cfe9ff; border-bottom:1px solid rgba(255,255,255,0.06); }
+      .table tbody td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,0.04); }
+      .table tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+      @media (max-width: 1100px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 720px) { .cards { grid-template-columns: 1fr; } .layout { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" aria-label="Thanh điều hướng quản trị">
+          <div class="brand">
+            <div class="logo">TV</div>
+            <div>
+              <h1>Admin — Báo cáo</h1>
+              <p class="sub">Thống kê hoạt động chatbot.</p>
+            </div>
+          </div>
+          <nav class="menu" role="navigation">
+            <a href="admin-dashboard.html">Dashboard</a>
+            <a href="conversations.html">Hội thoại</a>
+            <a href="qa.html">Q&amp;A</a>
+            <a href="majors.html">Ngành học</a>
+            <a href="candidates.html">Thí sinh</a>
+            <a href="#" class="active" aria-current="page">Báo cáo</a>
+          </nav>
+        </aside>
+
+        <!-- Main -->
+        <main>
+          <!-- Header -->
+          <div class="header">
+            <div class="brand" style="margin:0">
+              <div class="logo">TS</div>
+              <div>
+                <div style="font-weight:600">Báo cáo thống kê</div>
+                <div style="color:var(--muted);font-size:13px">Tổng quan & theo ngày</div>
+              </div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn small" title="Làm mới">Làm mới</button>
+            <div class="admin-avatar" title="Admin">AD</div>
+          </div>
+
+          <!-- Stats Cards -->
+          <section class="cards" aria-label="Thống kê nhanh">
+            <div class="card">
+              <div class="label">Tổng số hội thoại</div>
+              <div class="value">1,248</div>
+              <div class="meta">Tháng này</div>
+            </div>
+            <div class="card">
+              <div class="label">Số thí sinh quan tâm</div>
+              <div class="value">389</div>
+              <div class="meta">Để lại thông tin</div>
+            </div>
+            <div class="card">
+              <div class="label">Ngành hot nhất</div>
+              <div class="value">CNTT</div>
+              <div class="meta">Theo lượt hỏi</div>
+            </div>
+            <div class="card">
+              <div class="label">Tỉ lệ bot trả lời đúng</div>
+              <div class="value">82%</div>
+              <div class="meta">Ước lượng</div>
+            </div>
+          </section>
+
+          <!-- Fake Chart -->
+          <section class="chart" aria-label="Biểu đồ mô phỏng">
+            <div style="font-weight:600; margin-bottom:8px;">Biểu đồ hội thoại theo tuần</div>
+            <div class="bars">
+              <div class="bar" style="height: 90px"></div>
+              <div class="bar hot" style="height: 140px"></div>
+              <div class="bar" style="height: 120px"></div>
+              <div class="bar" style="height: 160px"></div>
+              <div class="bar hot" style="height: 180px"></div>
+              <div class="bar" style="height: 130px"></div>
+              <div class="bar" style="height: 100px"></div>
+            </div>
+            <div class="bar-labels">
+              <div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div>T7</div><div>CN</div>
+            </div>
+          </section>
+
+          <!-- Table by day -->
+          <section class="card" aria-label="Bảng thống kê theo ngày">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Ngày</th>
+                  <th>Số hội thoại</th>
+                  <th>Bot trả lời đúng</th>
+                  <th>Thí sinh để lại thông tin</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>30/11</td>
+                  <td>182</td>
+                  <td>152</td>
+                  <td>48</td>
+                </tr>
+                <tr>
+                  <td>29/11</td>
+                  <td>164</td>
+                  <td>133</td>
+                  <td>42</td>
+                </tr>
+                <tr>
+                  <td>28/11</td>
+                  <td>175</td>
+                  <td>141</td>
+                  <td>39</td>
+                </tr>
+                <tr>
+                  <td>27/11</td>
+                  <td>158</td>
+                  <td>126</td>
+                  <td>35</td>
+                </tr>
+                <tr>
+                  <td>26/11</td>
+                  <td>139</td>
+                  <td>115</td>
+                  <td>33</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

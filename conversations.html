@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản lý Hội thoại — Admin</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Layout: sidebar + content with details panel */
+      .layout { display: grid; grid-template-columns: 280px 1fr 420px; gap: 20px; min-height: 100vh; }
+      .sidebar { padding: 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow: 0 8px 30px rgba(2,6,23,0.6); }
+      .menu { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+      .menu a { text-decoration:none; color:inherit; font-size:14px; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0)); transition: transform 120ms ease, background 150ms ease; }
+      .menu a:hover { background: rgba(255,255,255,0.03); transform: translateY(-2px); }
+      .menu a.active { background: var(--glass); }
+      .header { display:flex; align-items:center; gap:12px; padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); }
+      .header .spacer { flex:1; }
+      .admin-avatar { width:36px; height:36px; border-radius:999px; background: linear-gradient(135deg, #60a5fa, #5eead4); display:flex; align-items:center; justify-content:center; color:#042; font-weight:700; }
+
+      /* Table */
+      .card { padding: 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.02)); box-shadow: 0 8px 24px rgba(2,6,23,0.4); }
+      .table { width:100%; border-collapse:collapse; font-size:14px; border:1px solid rgba(255,255,255,0.04); border-radius:12px; overflow:hidden; }
+      .table thead th { text-align:left; padding:12px; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04)); color:#cfe9ff; border-bottom:1px solid rgba(255,255,255,0.06); }
+      .table tbody td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,0.04); }
+      .table tbody tr:hover { background: rgba(255,255,255,0.02); }
+      .status { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700; color:#042; background: linear-gradient(90deg, var(--accent), #60a5fa); }
+
+      /* Details panel: reuse chat styles */
+      .details { display:flex; flex-direction:column; gap:12px; }
+      .chat-box { display:flex; flex-direction:column; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: var(--card); overflow:hidden; }
+      .chat-header-mini { padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.04); background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); display:flex; align-items:center; gap:10px; }
+      .chat-body { padding:12px; max-height: 48vh; overflow:auto; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.01)); }
+      .chat-input { display:flex; gap:10px; padding:12px; border-top:1px solid rgba(255,255,255,0.04); background: var(--card); }
+      .chat-input .input { flex:1; display:flex; gap:8px; align-items:center; background: var(--glass); padding:10px; border-radius:10px; }
+      .chat-input input, .chat-input textarea { flex:1; background:transparent; border:0; outline:0; color:inherit; font-size:14px; resize:none; }
+
+      @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } .chat-body { max-height: 36vh; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" aria-label="Thanh điều hướng quản trị">
+          <div class="brand">
+            <div class="logo">TV</div>
+            <div>
+              <h1>Admin — Hội thoại</h1>
+              <p class="sub">Theo dõi và xử lý hội thoại thí sinh.</p>
+            </div>
+          </div>
+          <nav class="menu" role="navigation">
+            <a href="admin-dashboard.html">Dashboard</a>
+            <a href="#" class="active" aria-current="page">Hội thoại</a>
+            <a href="qa.html">Q&amp;A</a>
+            <a href="majors.html">Ngành học</a>
+            <a href="candidates.html">Thí sinh</a>
+            <a href="reports.html">Báo cáo</a>
+          </nav>
+        </aside>
+
+        <!-- Main list -->
+        <main>
+          <!-- Header -->
+          <div class="header">
+            <div class="brand" style="margin:0">
+              <div class="logo">TS</div>
+              <div>
+                <div style="font-weight:600">Quản lý hội thoại</div>
+                <div style="color:var(--muted);font-size:13px">Danh sách hội thoại gần đây</div>
+              </div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn small" title="Làm mới">Làm mới</button>
+            <div class="admin-avatar" title="Admin">AD</div>
+          </div>
+
+          <!-- Table: conversations list -->
+          <section class="card" aria-label="Danh sách hội thoại">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Thời gian</th>
+                  <th>Tên thí sinh</th>
+                  <th>Tin nhắn cuối</th>
+                  <th>Trạng thái</th>
+                  <th>Tư vấn viên</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>09:12</td>
+                  <td>Nguyễn Minh</td>
+                  <td>Quan tâm ngành CNTT…</td>
+                  <td><span class="status">Đã trả lời</span></td>
+                  <td>Lan</td>
+                </tr>
+                <tr>
+                  <td>08:47</td>
+                  <td>Trần Anh</td>
+                  <td>Học bổng kỳ 1…</td>
+                  <td><span class="status">Đang xử lý</span></td>
+                  <td>Huy</td>
+                </tr>
+                <tr>
+                  <td>07:55</td>
+                  <td>Phạm Huy</td>
+                  <td>Học phí ngành QTKD…</td>
+                  <td><span class="status">Chờ duyệt</span></td>
+                  <td>Mai</td>
+                </tr>
+                <tr>
+                  <td>07:22</td>
+                  <td>Lê Hằng</td>
+                  <td>Thủ tục nhập học…</td>
+                  <td><span class="status">Đã trả lời</span></td>
+                  <td>Minh</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </main>
+
+        <!-- Details panel -->
+        <aside class="details" aria-label="Chi tiết hội thoại">
+          <!-- Conversation meta -->
+          <section class="card" aria-label="Thông tin hội thoại">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="history-avatar">TS</div>
+              <div>
+                <div style="font-weight:600">Nguyễn Minh</div>
+                <div style="color:var(--muted);font-size:13px">Mã: #C-10231 • CNTT</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Chat box -->
+          <section class="chat-box" aria-label="Khung tin nhắn">
+            <div class="chat-header-mini">
+              <div class="bot-avatar" style="width:32px;height:32px;font-size:13px;">TS</div>
+              <div style="font-weight:600;">Hội thoại</div>
+              <div style="flex:1"></div>
+              <div style="color:var(--muted);font-size:13px">Hôm nay 09:12</div>
+            </div>
+            <div class="chat-body">
+              <!-- Simulated messages: reuse .msg/.bubble styles -->
+              <div class="msg user"><div class="bubble user">Em muốn hỏi về ngành CNTT, yêu cầu đầu vào thế nào ạ?</div><div class="meta">09:10</div></div>
+              <div class="msg bot"><div class="bubble bot">Ngành CNTT thường yêu cầu điểm thi hoặc xét học bạ. Em quan tâm trường nào để mình tư vấn chi tiết?</div><div class="meta">09:11</div></div>
+              <div class="msg user"><div class="bubble user">PTIT có chương trình chất lượng cao không ạ?</div><div class="meta">09:12</div></div>
+            </div>
+            <div class="chat-input">
+              <div class="input"><textarea rows="2" placeholder="Soạn tin nhắn trả lời…"></textarea></div>
+              <button class="btn">Gửi</button>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+    <!-- No backend; all data above is illustrative only -->
+  </body>
+</html>

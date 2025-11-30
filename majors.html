@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản lý Ngành học — Admin</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .layout { display:grid; grid-template-columns: 280px 1fr; gap:20px; min-height:100vh; }
+      .sidebar { padding:18px; border-radius:14px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow: 0 8px 30px rgba(2,6,23,0.6); }
+      .menu { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+      .menu a { text-decoration:none; color:inherit; font-size:14px; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0)); transition: transform 120ms ease, background 150ms ease; }
+      .menu a:hover { background: rgba(255,255,255,0.03); transform: translateY(-2px); }
+      .menu a.active { background: var(--glass); }
+      .header { display:flex; align-items:center; gap:12px; padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); }
+      .header .spacer { flex:1; }
+      .admin-avatar { width:36px; height:36px; border-radius:999px; background: linear-gradient(135deg, #60a5fa, #5eead4); display:flex; align-items:center; justify-content:center; color:#042; font-weight:700; }
+
+      .card { padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.02)); box-shadow: 0 8px 24px rgba(2,6,23,0.4); }
+      .table { width:100%; border-collapse:collapse; font-size:14px; border:1px solid rgba(255,255,255,0.04); border-radius:12px; overflow:hidden; }
+      .table thead th { text-align:left; padding:12px; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04)); color:#cfe9ff; border-bottom:1px solid rgba(255,255,255,0.06); }
+      .table tbody td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,0.04); }
+      .table tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+      .form { display:grid; grid-template-columns: 1fr; gap:10px; }
+      .form .row { display:grid; grid-template-columns: 1fr; gap:10px; }
+      .input, .textarea { background: var(--glass); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); }
+      .input input, .textarea textarea { width:100%; background:transparent; border:0; outline:0; color:inherit; font-size:14px; resize:vertical; }
+      @media (min-width: 900px) { .form .row { grid-template-columns: 1fr 1fr 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" aria-label="Thanh điều hướng quản trị">
+          <div class="brand">
+            <div class="logo">TV</div>
+            <div>
+              <h1>Admin — Ngành học</h1>
+              <p class="sub">Quản lý danh mục ngành đào tạo.</p>
+            </div>
+          </div>
+          <nav class="menu" role="navigation">
+            <a href="admin-dashboard.html">Dashboard</a>
+            <a href="conversations.html">Hội thoại</a>
+            <a href="qa.html">Q&amp;A</a>
+            <a href="#" class="active" aria-current="page">Ngành học</a>
+            <a href="candidates.html">Thí sinh</a>
+            <a href="reports.html">Báo cáo</a>
+          </nav>
+        </aside>
+
+        <!-- Main -->
+        <main>
+          <!-- Header -->
+          <div class="header">
+            <div class="brand" style="margin:0">
+              <div class="logo">TS</div>
+              <div>
+                <div style="font-weight:600">Quản lý ngành học</div>
+                <div style="color:var(--muted);font-size:13px">Danh sách ngành đào tạo</div>
+              </div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn small" title="Làm mới">Làm mới</button>
+            <div class="admin-avatar" title="Admin">AD</div>
+          </div>
+
+          <!-- Table: majors -->
+          <section class="card" aria-label="Danh sách ngành học">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Tên ngành</th>
+                  <th>Mã ngành</th>
+                  <th>Điểm chuẩn</th>
+                  <th>Học phí</th>
+                  <th>Thời gian đào tạo</th>
+                  <th>Ghi chú</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Công nghệ thông tin</td>
+                  <td>7480201</td>
+                  <td>26.5</td>
+                  <td>~45tr/năm</td>
+                  <td>4 năm</td>
+                  <td>Chương trình chất lượng cao</td>
+                </tr>
+                <tr>
+                  <td>Quản trị kinh doanh</td>
+                  <td>7340101</td>
+                  <td>25.0</td>
+                  <td>~40tr/năm</td>
+                  <td>4 năm</td>
+                  <td>Học bổng khuyến khích</td>
+                </tr>
+                <tr>
+                  <td>An toàn thông tin</td>
+                  <td>7480202</td>
+                  <td>27.0</td>
+                  <td>~48tr/năm</td>
+                  <td>4 năm</td>
+                  <td>Liên kết doanh nghiệp</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- Form: add major -->
+          <section class="card" aria-label="Thêm ngành học">
+            <div style="font-weight:600; margin-bottom:8px;">Thêm ngành học</div>
+            <form class="form" onsubmit="return false;">
+              <div class="row">
+                <div class="input"><input type="text" placeholder="Tên ngành" /></div>
+                <div class="input"><input type="text" placeholder="Mã ngành" /></div>
+                <div class="input"><input type="text" placeholder="Điểm chuẩn" /></div>
+              </div>
+              <div class="row">
+                <div class="input"><input type="text" placeholder="Học phí (ước lượng)" /></div>
+                <div class="input"><input type="text" placeholder="Thời gian đào tạo" /></div>
+              </div>
+              <div class="textarea"><textarea rows="4" placeholder="Mô tả ngắn / ghi chú"></textarea></div>
+              <div><button class="btn" type="button">Lưu</button></div>
+            </form>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản lý Thí sinh — Admin</title>
+    <!-- Reuse project font + theme -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Layout: Sidebar + Main + Details */
+      .layout { display: grid; grid-template-columns: 280px 1fr 420px; gap: 20px; min-height: 100vh; }
+      .sidebar { padding: 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow: 0 8px 30px rgba(2,6,23,0.6); }
+      .menu { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+      .menu a { text-decoration:none; color:inherit; font-size:14px; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0)); transition: transform 120ms ease, background 150ms ease; }
+      .menu a:hover { background: rgba(255,255,255,0.03); transform: translateY(-2px); }
+      .menu a.active { background: var(--glass); }
+
+      .header { display:flex; align-items:center; gap:12px; padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); }
+      .header .spacer { flex:1; }
+      .admin-avatar { width:36px; height:36px; border-radius:999px; background: linear-gradient(135deg, #60a5fa, #5eead4); display:flex; align-items:center; justify-content:center; color:#042; font-weight:700; }
+
+      /* Filters */
+      .card { padding: 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.02)); box-shadow: 0 8px 24px rgba(2,6,23,0.4); }
+      .filters { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
+      .input, .select { background: var(--glass); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); display:flex; align-items:center; }
+      .input input, .select select { width:100%; background:transparent; border:0; outline:0; color:inherit; font-size:14px; }
+      @media (max-width: 900px) { .filters { grid-template-columns: 1fr; } }
+
+      /* Table */
+      .table { width:100%; border-collapse:collapse; font-size:14px; border:1px solid rgba(255,255,255,0.04); border-radius:12px; overflow:hidden; }
+      .table thead th { text-align:left; padding:12px; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04)); color:#cfe9ff; border-bottom:1px solid rgba(255,255,255,0.06); }
+      .table tbody td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,0.04); }
+      .table tbody tr:hover { background: rgba(255,255,255,0.02); }
+      .status { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700; color:#042; background: linear-gradient(90deg, var(--accent), #60a5fa); }
+
+      /* Details panel */
+      .details { display:flex; flex-direction:column; gap:12px; }
+      .detail-card { padding: 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.02)); box-shadow: 0 8px 24px rgba(2,6,23,0.4); }
+      .info-row { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+      .note { background: var(--glass); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); min-height: 90px; }
+      .history { display:flex; flex-direction:column; gap:8px; }
+      .history-item { display:flex; gap:8px; align-items:flex-start; }
+      .history-item .badge { margin-left: 0; }
+
+      @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" aria-label="Thanh điều hướng quản trị">
+          <div class="brand">
+            <div class="logo">TV</div>
+            <div>
+              <h1>Admin — Thí sinh</h1>
+              <p class="sub">Quản lý thông tin ứng viên.</p>
+            </div>
+          </div>
+          <!-- Keep only 6 tabs used across admin -->
+          <nav class="menu" role="navigation">
+            <a href="admin-dashboard.html">Dashboard</a>
+            <a href="conversations.html">Hội thoại</a>
+            <a href="qa.html">Q&amp;A</a>
+            <a href="majors.html">Ngành học</a>
+            <a href="#" class="active" aria-current="page">Thí sinh</a>
+            <a href="reports.html">Báo cáo</a>
+          </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main>
+          <!-- Header -->
+          <div class="header">
+            <div class="brand" style="margin:0">
+              <div class="logo">TS</div>
+              <div>
+                <div style="font-weight:600">Quản lý thí sinh</div>
+                <div style="color:var(--muted);font-size:13px">Tìm kiếm, lọc và xem chi tiết</div>
+              </div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn small" title="Làm mới">Làm mới</button>
+            <div class="admin-avatar" title="Admin">AD</div>
+          </div>
+
+          <!-- Filters -->
+          <section class="card" aria-label="Bộ lọc & tìm kiếm">
+            <div class="filters">
+              <div class="input"><input type="text" placeholder="Tìm theo tên hoặc SĐT" /></div>
+              <div class="select">
+                <select aria-label="Ngành quan tâm">
+                  <option value="">Ngành quan tâm</option>
+                  <option>CNTT</option>
+                  <option>ATTT</option>
+                  <option>QTKD</option>
+                </select>
+              </div>
+              <div class="select">
+                <select aria-label="Trạng thái">
+                  <option value="">Trạng thái</option>
+                  <option>Mới</option>
+                  <option>Đã liên hệ</option>
+                  <option>Đã nộp hồ sơ</option>
+                  <option>Đã nhập học</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- Candidates table -->
+          <section class="card" aria-label="Danh sách thí sinh">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Họ tên</th>
+                  <th>Số điện thoại</th>
+                  <th>Email</th>
+                  <th>Ngành quan tâm</th>
+                  <th>Trạng thái</th>
+                  <th>Ngày tạo</th>
+                  <th>Ghi chú</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Nguyễn Minh</td>
+                  <td>0901234567</td>
+                  <td>minh@example.com</td>
+                  <td>CNTT</td>
+                  <td><span class="status">Mới</span></td>
+                  <td>30/11</td>
+                  <td>Quan tâm chương trình CLC</td>
+                  <td><button class="btn small" type="button">Chi tiết</button></td>
+                </tr>
+                <tr>
+                  <td>Trần Anh</td>
+                  <td>0912345678</td>
+                  <td>anh@example.com</td>
+                  <td>QTKD</td>
+                  <td><span class="status">Đã liên hệ</span></td>
+                  <td>29/11</td>
+                  <td>Yêu cầu thông tin học phí</td>
+                  <td><button class="btn small" type="button">Chi tiết</button></td>
+                </tr>
+                <tr>
+                  <td>Phạm Huy</td>
+                  <td>0987654321</td>
+                  <td>huy@example.com</td>
+                  <td>ATTT</td>
+                  <td><span class="status">Đã nộp hồ sơ</span></td>
+                  <td>28/11</td>
+                  <td>Chờ phản hồi phòng tuyển sinh</td>
+                  <td><button class="btn small" type="button">Chi tiết</button></td>
+                </tr>
+                <tr>
+                  <td>Lê Hằng</td>
+                  <td>0933334444</td>
+                  <td>hang@example.com</td>
+                  <td>CNTT</td>
+                  <td><span class="status">Đã nhập học</span></td>
+                  <td>25/11</td>
+                  <td>Đã xác nhận nhập học</td>
+                  <td><button class="btn small" type="button">Chi tiết</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </main>
+
+        <!-- Candidate details panel -->
+        <aside class="details" aria-label="Chi tiết thí sinh">
+          <!-- Summary -->
+          <section class="detail-card" aria-label="Thông tin cơ bản">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="history-avatar">TS</div>
+              <div>
+                <div style="font-weight:600">Nguyễn Minh</div>
+                <div style="color:var(--muted);font-size:13px">SĐT: 0901234567 • Email: minh@example.com</div>
+              </div>
+            </div>
+            <div class="info-row" style="margin-top:10px;">
+              <div class="input"><span style="color:var(--muted);font-size:13px;">Ngành quan tâm</span><div style="font-weight:600;">CNTT</div></div>
+              <div class="input"><span style="color:var(--muted);font-size:13px;">Trạng thái</span><div><span class="status">Mới</span></div></div>
+            </div>
+          </section>
+
+          <!-- History -->
+          <section class="detail-card" aria-label="Lịch sử trao đổi">
+            <div style="font-weight:600; margin-bottom:8px;">Lịch sử trao đổi</div>
+            <div class="history">
+              <div class="history-item">
+                <div class="badge">09:10</div>
+                <div style="color:#cfe9ff">Gọi điện tư vấn lần 1 — chưa bắt máy.</div>
+              </div>
+              <div class="history-item">
+                <div class="badge">09:45</div>
+                <div style="color:#cfe9ff">Nhắn tin SMS thông tin chương trình CLC.</div>
+              </div>
+              <div class="history-item">
+                <div class="badge">10:05</div>
+                <div style="color:#cfe9ff">Ứng viên phản hồi muốn tham khảo học phí.</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Actions & notes -->
+          <section class="detail-card" aria-label="Cập nhật & ghi chú">
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
+              <button class="btn small" type="button">Cập nhật trạng thái</button>
+              <button class="btn small" type="button">Gửi email</button>
+            </div>
+            <div class="note" contenteditable="false" aria-label="Ghi chú tư vấn viên">Ghi chú: Ưu tiên thông tin học phí và học bổng.</div>
+          </section>
+        </aside>
+      </div>
+    </div>
+    <!-- All data above is illustrative; no backend used -->
+  </body>
+</html>

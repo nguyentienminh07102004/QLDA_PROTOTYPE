@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản lý Q&A — Admin</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .layout { display:grid; grid-template-columns: 280px 1fr; gap:20px; min-height:100vh; }
+      .sidebar { padding:18px; border-radius:14px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow: 0 8px 30px rgba(2,6,23,0.6); }
+      .menu { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+      .menu a { text-decoration:none; color:inherit; font-size:14px; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0)); transition: transform 120ms ease, background 150ms ease; }
+      .menu a:hover { background: rgba(255,255,255,0.03); transform: translateY(-2px); }
+      .menu a.active { background: var(--glass); }
+      .header { display:flex; align-items:center; gap:12px; padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); }
+      .header .spacer { flex:1; }
+      .admin-avatar { width:36px; height:36px; border-radius:999px; background: linear-gradient(135deg, #60a5fa, #5eead4); display:flex; align-items:center; justify-content:center; color:#042; font-weight:700; }
+
+      /* Table */
+      .card { padding: 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.02)); box-shadow: 0 8px 24px rgba(2,6,23,0.4); }
+      .table { width:100%; border-collapse:collapse; font-size:14px; border:1px solid rgba(255,255,255,0.04); border-radius:12px; overflow:hidden; }
+      .table thead th { text-align:left; padding:12px; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04)); color:#cfe9ff; border-bottom:1px solid rgba(255,255,255,0.06); }
+      .table tbody td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,0.04); }
+      .table tbody tr:hover { background: rgba(255,255,255,0.02); }
+      .tag { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700; color:#042; background: linear-gradient(90deg, var(--accent), #60a5fa); margin-right:6px; }
+
+      /* Form */
+      .form { display:grid; grid-template-columns: 1fr; gap:10px; }
+      .form .row { display:grid; grid-template-columns: 1fr; gap:10px; }
+      .input, .textarea, .tags { background: var(--glass); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); }
+      .input input, .textarea textarea { width:100%; background:transparent; border:0; outline:0; color:inherit; font-size:14px; resize:vertical; }
+      .small-note { color: var(--muted); font-size:12px; }
+      @media (min-width: 820px) { .form .row { grid-template-columns: 1fr 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" aria-label="Thanh điều hướng quản trị">
+          <div class="brand">
+            <div class="logo">TV</div>
+            <div>
+              <h1>Admin — Q&amp;A</h1>
+              <p class="sub">Quản lý câu hỏi và câu trả lời.</p>
+            </div>
+          </div>
+          <nav class="menu" role="navigation">
+            <a href="admin-dashboard.html">Dashboard</a>
+            <a href="conversations.html">Hội thoại</a>
+            <a href="#" class="active" aria-current="page">Q&amp;A</a>
+            <a href="majors.html">Ngành học</a>
+            <a href="candidates.html">Thí sinh</a>
+            <a href="reports.html">Báo cáo</a>
+          </nav>
+        </aside>
+
+        <!-- Main -->
+        <main>
+          <!-- Header -->
+          <div class="header">
+            <div class="brand" style="margin:0">
+              <div class="logo">TS</div>
+              <div>
+                <div style="font-weight:600">Quản lý Q&amp;A</div>
+                <div style="color:var(--muted);font-size:13px">Danh sách câu hỏi & câu trả lời</div>
+              </div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn small" title="Làm mới">Làm mới</button>
+            <div class="admin-avatar" title="Admin">AD</div>
+          </div>
+
+          <!-- Table: Q&A list -->
+          <section class="card" aria-label="Danh sách Q&amp;A">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Câu hỏi</th>
+                  <th>Câu trả lời</th>
+                  <th>Thẻ từ khóa</th>
+                  <th>Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Điều kiện học bổng đầu vào?</td>
+                  <td>Điểm xét tuyển và bài luận. Tùy chương trình.</td>
+                  <td><span class="tag">học bổng</span><span class="tag">đầu vào</span></td>
+                  <td><span class="status">Hiển thị</span></td>
+                </tr>
+                <tr>
+                  <td>Học phí CNTT?</td>
+                  <td>Phụ thuộc chương trình. Ước lượng 8–120 triệu/năm.</td>
+                  <td><span class="tag">học phí</span><span class="tag">cntt</span></td>
+                  <td><span class="status">Hiển thị</span></td>
+                </tr>
+                <tr>
+                  <td>Thủ tục nhập học?</td>
+                  <td>Đơn đăng ký, bảng điểm, giấy tờ cá nhân.</td>
+                  <td><span class="tag">thủ tục</span><span class="tag">nhập học</span></td>
+                  <td><span class="status">Ẩn</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- Form: create new Q&A -->
+          <section class="card" aria-label="Tạo Q&amp;A mới">
+            <div style="font-weight:600; margin-bottom:8px;">Tạo mới Q&amp;A</div>
+            <form class="form" onsubmit="return false;">
+              <div class="row">
+                <div class="input"><input type="text" placeholder="Câu hỏi" /></div>
+                <div class="input"><input type="text" placeholder="Thẻ từ khóa (phân tách bằng dấu phẩy)" /></div>
+              </div>
+              <div class="textarea"><textarea rows="4" placeholder="Câu trả lời"></textarea></div>
+              <div class="small-note">Dữ liệu chỉ minh họa, nút Lưu không thực thi.</div>
+              <div><button class="btn" type="button">Lưu</button></div>
+            </form>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
