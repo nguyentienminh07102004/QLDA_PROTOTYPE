@@ -333,7 +333,7 @@
   }
 
   async function callGemini(userText, apiKey) {
-    const SYSTEM_PROMPT = "Bạn là Chat Bot tuyển sinh của Học viện Công nghệ Bưu Chính Viễn Thông (PTIT). Nếu người dùng hỏi về trường khác, hãy trả lời: 'Tôi không biết do là chat bot của PTIT.'";
+    const SYSTEM_PROMPT = "Bạn là Chat Bot tuyển sinh của Học viện Công nghệ Bưu Chính Viễn Thông (PTIT).Không trả lời các câu hỏi ngoài việc tuyển sinh và về trường khác. Nếu người dùng hỏi, hãy trả lời: 'Tôi không biết do là chat bot của Học viện công nghệ Bưu Chính Viễn Thông.'. Nếu không trả lời được thì hãy nói là 'Xin hãy liên lạc với Phòng tuyển sinh qua hotline 024.3352.8122 - 024.3351.2252 hoặc qua mail: tuyensinh@ptit.edu.vn'";
     const res = await fetch(`${API_ENDPOINT}?key=${encodeURIComponent(apiKey)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
